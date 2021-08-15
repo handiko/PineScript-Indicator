@@ -1,0 +1,27 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © handikogesang
+
+//@version=4
+study("EMA Deviation")
+
+emaLen = input(title="Price EMA Length", type=input.integer, defval=200, minval=1)
+emaDevLen = input(title="Deviation Smoothing", type=input.integer, defval=100, minval=1)
+fastLen = input(title="Fast Histogram Smoothing", type=input.integer, defval=9, minval=1)
+slowLen = input(title="Slow Hitogram Smoothing", type=input.integer, defval=21, minval=1)
+
+emaSrc = close
+
+ema = ema(emaSrc, emaLen)
+
+emaDev = emaSrc - ema
+smoothedEmaDev = ema(emaDev, emaDevLen)
+
+hist = (emaDev - smoothedEmaDev)
+smoothedHistFast = sma(hist, fastLen)
+smoothedHistSlow = sma(hist, slowLen)
+
+histGap = hist - smoothedHistFast
+
+plot(hist, title="Histogram", color=(hist > 0 ? color.green : color.red), style= plot.style_columns, linewidth=4, transp=20)
+plot(smoothedHistFast, title="Fast Line", color=color.blue, linewidth=2)
+plot(smoothedHistSlow, title="Slow Line", color=color.red, linewidth=2)
